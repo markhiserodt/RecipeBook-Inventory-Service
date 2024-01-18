@@ -1,6 +1,8 @@
 package inventory.service;
 
 import inventory.entity.Inventory;
+import inventory.model.Food;
+import inventory.model.Recipe;
 import inventory.repository.InventoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,5 +36,16 @@ public class InventoryService {
 
     public void delete(Long id) {
         this.repository.deleteById(id);
+    }
+
+    public boolean isAvailable(Recipe recipe) {
+        List<Inventory> inventoryList = this.repository.findAll();
+        for (Food food : recipe.getFoods()) {
+            boolean isInInventory = inventoryList.stream().anyMatch(inventory -> inventory.getName().equals(food.getName()));
+            if (!isInInventory) {
+                return false;
+            }
+        }
+        return true;
     }
 }
